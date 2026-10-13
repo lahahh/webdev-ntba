@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Phân tích bố cục trang chủ VNU-IS và đề xuất triển khai bằng Bootstrap 5.">
+  <title>Bố cục VNU-IS | Phân tích Bootstrap 5</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #142c48;
+      --blue: #123b68;
+      --blue-soft: #eaf1f7;
+      --teal: #167c80;
+      --gold: #c79527;
+      --paper: #f7f8f6;
+      --line: #d7e0e6;
+      --muted: #526477;
+      --white: #fff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--paper);
+      font-family: "Segoe UI", "Noto Sans", sans-serif;
+      line-height: 1.65;
+    }
+    a { color: var(--blue); }
+    .masthead { background: var(--blue); color: var(--white); padding: 3rem max(1rem, calc((100% - 1120px) / 2)); }
+    .masthead p { max-width: 760px; color: #e3edf5; margin-bottom: 0; }
+    .eyebrow { color: #f2d589; text-transform: uppercase; font-size: .78rem; font-weight: 700; letter-spacing: .08em; }
+    h1 { max-width: 850px; line-height: 1.12; margin: .55rem 0 1rem; font-size: clamp(2rem, 5vw, 3.35rem); }
+    h2 { margin-top: 0; font-size: 1.55rem; }
+    h3 { font-size: 1.08rem; margin: 0 0 .5rem; }
+    main { max-width: 1120px; margin: 0 auto; padding: 2rem 1rem 4rem; }
+    section { margin: 0 0 2rem; }
+    .intro { display: grid; grid-template-columns: minmax(0, 1fr) minmax(220px, .45fr); gap: 1rem; align-items: stretch; }
+    .note, .panel { background: var(--white); border: 1px solid var(--line); border-radius: 6px; padding: 1.25rem; }
+    .note { border-left: 4px solid var(--gold); }
+    .panel h2 { border-bottom: 2px solid var(--teal); padding-bottom: .6rem; }
+    .tree { overflow-x: auto; color: #eaf3fb; background: #102b46; border-radius: 6px; padding: 1.2rem; font: .9rem/1.55 Consolas, "Courier New", monospace; }
+    .grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 1rem; }
+    .block { border: 1px solid var(--line); border-top: 4px solid var(--teal); background: var(--white); padding: 1rem; border-radius: 5px; }
+    .span-12 { grid-column: span 12; }
+    .span-8 { grid-column: span 8; }
+    .span-7 { grid-column: span 7; }
+    .span-5 { grid-column: span 5; }
+    .span-4 { grid-column: span 4; }
+    .span-3 { grid-column: span 3; }
+    .shortcut-list, .compact-list { margin: .4rem 0 0; padding-left: 1.2rem; }
+    .tag { display: inline-block; margin: .2rem .2rem .2rem 0; padding: .12rem .45rem; color: var(--blue); background: var(--blue-soft); border-radius: 3px; font: .78rem Consolas, monospace; }
+    .muted { color: var(--muted); }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; background: var(--white); }
+    th, td { text-align: left; vertical-align: top; padding: .75rem; border: 1px solid var(--line); }
+    th { color: var(--white); background: var(--blue); }
+    code { color: #104e69; background: #edf3f5; padding: .08rem .28rem; border-radius: 3px; }
+    .programs { columns: 2; }
+    .footer-grid { display: grid; grid-template-columns: 2fr 2fr 1fr 1fr; gap: 1rem; }
+    .cta { position: fixed; right: 1rem; bottom: 1rem; z-index: 2; padding: .7rem 1rem; color: #fff; background: var(--gold); border: 0; border-radius: 3rem; font-weight: 700; box-shadow: 0 4px 16px #142c4840; }
+    @media (max-width: 760px) {
+      .intro { grid-template-columns: 1fr; }
+      .span-8, .span-7, .span-5, .span-4, .span-3 { grid-column: span 12; }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+      .programs { columns: 1; }
+      .masthead { padding-top: 2.2rem; padding-bottom: 2.2rem; }
+    }
+    @media (max-width: 460px) {
+      .footer-grid { grid-template-columns: 1fr; }
+      .tree { font-size: .75rem; }
+      .cta { right: .65rem; bottom: .65rem; font-size: .82rem; }
+    }
+  </style>
+</head>
+<body>
+  <header class="masthead">
+    <div class="eyebrow">Bản phân tích giao diện · 06/10/2026</div>
+    <h1>Trang chủ Trường Quốc tế - ĐHQGHN</h1>
+    <p>Phân rã bố cục từ ngoài vào trong và ánh xạ từng vùng sang grid, component, utility của Bootstrap 5 để dựng lại nhanh.</p>
+  </header>
+  <main>
+    <section class="intro">
+      <div class="panel">
+        <h2>Tổng quan</h2>
+        <p>Thứ tự trang: header → banner → lối tắt → tin tức/thông báo/tuyển sinh → sự kiện và media → chương trình đào tạo → số liệu → đối tác → footer. Ngoài luồng nội dung còn có CTA tư vấn cố định và các form chiến dịch dạng popup.</p>
+        <p class="muted">Phân tích dựa trên trang https://www.is.vnu.edu.vn/. Nội dung banner, tin, menu con và popup có thể thay đổi; đây là đề xuất tái dựng, không xác nhận website gốc đang sử dụng Bootstrap.</p>
+      </div>
+      <aside class="note">
+        <h3>Lưới cơ sở</h3>
+        <p><code>container-xxl</code> → <code>row</code> → tối đa 12 cột. Desktop dùng vùng tin 8/4 và sự kiện/media 5/7. Mobile xếp dọc.</p>
+        <p><strong>Breakpoint:</strong> <code>sm</code>, <code>md</code>, <code>lg</code>, <code>xl</code>, <code>xxl</code>.</p>
+      </aside>
+    </section>
+
+    <section class="panel">
+      <h2>Cây layout từ ngoài vào trong</h2>
+      <pre class="tree">body
+├── CTA tư vấn tuyển sinh (position-fixed bottom-0 end-0)
+├── header.container
+│   ├── .row: logo + tiện ích (VNU, E-GOV, E-Office, LMS, tài nguyên, liên hệ)
+│   ├── ngôn ngữ VI / EN / FR + việc làm / sinh viên / tra cứu / tìm kiếm
+│   └── navbar.navbar-expand-xl
+│       ├── Trang chủ
+│       └── Giới thiệu | Đào tạo | KHCN | Hợp tác | Đời sống SV | Tuyển sinh
+├── main
+│   ├── carousel.banner (3 slide)
+│   ├── row.shortcuts (6 mục)
+│   ├── row.news (8/12 tin tức + 4/12 sidebar)
+│   │   ├── bài nổi bật + danh sách tin
+│   │   └── thông báo + Humans of VNU-IS + tuyển sinh 2026
+│   ├── row.events-media (5/12 sự kiện + 7/12 ảnh/video)
+│   ├── programs
+│   │   ├── tabs: Cử nhân-Kỹ sư (17) | Thạc sỹ (8) | Tiến sỹ (2)
+│   │   └── carousel/grid chương trình
+│   ├── statistics (6 chỉ số)
+│   └── partner logos (grid hoặc carousel)
+└── footer.container
+    ├── địa chỉ + 3 cơ sở + email
+    ├── bản đồ chỉ dẫn
+    ├── thông tin + sơ đồ website
+    └── mạng xã hội + bản quyền</pre>
+    </section>
+
+    <section>
+      <h2>Sơ đồ ASCII desktop</h2>
+      <pre class="tree">┌─────────────────────────────────────────────────────────────────────────────┐
+│ HEADER: Logo + tiện ích + ngôn ngữ                                          │
+│ MENU: Trang chủ | Giới thiệu | Đào tạo | KHCN | Hợp tác | SV | Tuyển sinh  │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ CAROUSEL BANNER: 3 slide                                                    │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ LỐI TẮT: LAB | Đoàn thể | Tuyển dụng | Học giả | Thư viện | Kiểm định      │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ TIN TỨC (8/12)                                │ SIDEBAR (4/12)              │
+│ bài nổi bật + tin mới                         │ thông báo                   │
+│                                               │ Humans of VNU-IS            │
+│                                               │ Tuyển sinh 2026             │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ SỰ KIỆN (5/12)                  │ ẢNH VÀ VIDEO (7/12)                    │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ CHƯƠNG TRÌNH: [Cử nhân 17] [Thạc sỹ 8] [Tiến sỹ 2] + carousel              │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ THỐNG KÊ: 24 CT | 7.000+ SV | 400+ chuyên gia | 40 đối tác | 30 quốc tịch  │
+│           93% việc làm sau tốt nghiệp                                      │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ LOGO ĐỐI TÁC: [logo] [logo] [logo] [logo] [logo] ...                       │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ FOOTER: Địa chỉ (4/12) | Bản đồ (4/12) | Thông tin (2/12) | Sơ đồ (2/12)   │
+│ Mạng xã hội + bản quyền                          [CTA cố định]             │
+└─────────────────────────────────────────────────────────────────────────────┘</pre>
+      <p class="muted">Trên mobile: header/menu thu gọn; lối tắt thành 2 cột; các vùng 8/4 và 5/7 xếp dọc; chương trình và số liệu giảm số cột.</p>
+    </section>
+
+    <section class="panel">
+      <h2>Chi tiết từng khu vực</h2>
+      <div class="grid">
+        <article class="block span-4"><h3>1. Header</h3><p>Logo trường/ĐHQGHN; link VNU, E-GOV, E-Office, LMS, tài nguyên số, liên hệ; ngôn ngữ; cổng việc làm, sinh viên, tra cứu văn bằng; tìm kiếm. Menu có 6 mục nội dung ngoài Trang chủ.</p><span class="tag">navbar-expand-xl</span><span class="tag">dropdown</span><span class="tag">collapse</span></article>
+        <article class="block span-4"><h3>2. Banner</h3><p>Carousel 3 slide, chỉ báo, nút trước/sau. Cần quy định chiều cao và crop ảnh theo breakpoint.</p><span class="tag">carousel</span><span class="tag">carousel-item</span><span class="tag">object-fit: cover</span></article>
+        <article class="block span-4"><h3>3. Lối tắt</h3><p>LAB; Tổ chức đoàn thể; Tuyển dụng; Học giả quốc tế; Thư viện; Kiểm định chất lượng.</p><span class="tag">row-cols-2</span><span class="tag">row-cols-md-3</span><span class="tag">row-cols-xl-6</span></article>
+        <article class="block span-8"><h3>4. Tin tức</h3><p>Bài chính có ảnh, nhãn, ngày giờ, tiêu đề, tóm tắt; cạnh đó là danh sách tin có ảnh nhỏ và ngày. Tin khảo sát gồm bài về Cụ Huỳnh Thúc Kháng, nhóm nghiên cứu Chuyển đổi bền vững, phỏng vấn kỹ sư, trải nghiệm FPT, Istart Camp và tin ĐHQGHN.</p><span class="tag">row g-4</span><span class="tag">col-lg-8</span><span class="tag">card</span><span class="tag">list-group-flush</span></article>
+        <article class="block span-4"><h3>5. Sidebar</h3><p>Thông báo học bổng/trao đổi; một bài Humans of VNU-IS; khối tuyển sinh 2026 có liên kết đại học và sau đại học.</p><span class="tag">col-lg-4</span><span class="tag">list-group</span><span class="tag">card</span></article>
+        <article class="block span-5"><h3>6. Sự kiện</h3><p>Khoảng 6 mục; ngày/tháng và tên sự kiện như hội nghị viên chức, Đại sứ Văn hóa đọc, IStart Camp, ISTARTUP, VISL Talk, khai giảng.</p><span class="tag">col-lg-5</span><span class="tag">d-flex</span></article>
+        <article class="block span-7"><h3>7. Ảnh và video</h3><p>Video YouTube nhúng và gallery liên kết ảnh/video sự kiện. Gallery nhiều item cần logic carousel bổ sung nếu muốn trượt nhiều thẻ.</p><span class="tag">col-lg-7</span><span class="tag">ratio-16x9</span><span class="tag">row-cols-*</span></article>
+        <article class="block span-12"><h3>8. Chương trình đào tạo</h3><p>Tabs: Cử nhân - Kỹ sư (17), Thạc sỹ (8), Tiến sỹ (2). Danh sách 17 ngành Cử nhân/Kỹ sư:</p><ol class="programs"><li>Truyền thông số</li><li>Kinh doanh số</li><li>Công nghệ thông tin ứng dụng</li><li>Kinh doanh quốc tế</li><li>Kế toán, Phân tích và Kiểm toán</li><li>Hệ thống thông tin quản lí</li><li>Tin học và Kĩ thuật máy tính</li><li>Phân tích dữ liệu kinh doanh</li><li>Tự động hóa và Tin học</li><li>Ngôn ngữ Anh</li><li>Khoa học quản lí</li><li>Kế toán và Tài chính</li><li>Quản trị Khách sạn, Thể thao và Du lịch</li><li>Marketing</li><li>Cử nhân ngành Quản lý (song bằng)</li><li>Công nghệ tài chính và Kinh doanh số</li><li>Kỹ thuật hệ thống công nghiệp và Logistics</li></ol><span class="tag">nav-tabs</span><span class="tag">tab-content</span><span class="tag">row-cols-lg-4</span><span class="tag">card</span></article>
+        <article class="block span-7"><h3>9. Số liệu</h3><p>24 chương trình; hơn 7.000 sinh viên/học viên; hơn 400 giảng viên/chuyên gia/nhà khoa học; 40 đối tác; 30 quốc tịch; 93% việc làm trong 12 tháng.</p><span class="tag">row-cols-2</span><span class="tag">row-cols-md-3</span><span class="tag">row-cols-xl-6</span></article>
+        <article class="block span-5"><h3>10. Đối tác</h3><p>Dải logo đối tác quốc tế/trong nước. Ví dụ: Macquarie, Aix-Marseille, Canberra, Keuka, Missouri, Western Sydney, UniSA, UNB, Nantes, Arizona, UEL, MPEI, LHU, IPAG, ECU, Heriot-Watt, Curtin, Deakin.</p><span class="tag">row-cols-xl-7</span><span class="tag">carousel</span></article>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Footer và biểu mẫu</h2>
+      <div class="footer-grid">
+        <div><h3>Địa chỉ</h3><p>Xuân Thủy: Nhà E5 &amp; G7, 144 Xuân Thủy, Cầu Giấy.<br>Phan Tây Nhạc: số 1, phố Phan Tây Nhạc, Xuân Phương.<br>Hòa Lạc: tòa HT1, Khu đô thị đại học.<br>Email: is@vnu.edu.vn.</p></div>
+        <div><h3>Bản đồ chỉ dẫn</h3><p>Iframe bản đồ; Bootstrap <code>ratio ratio-16x9</code>.</p></div>
+        <div><h3>Thông tin</h3><p>ĐHQGHN, phòng chức năng, khoa trực thuộc, trung tâm/viện.</p></div>
+        <div><h3>Sơ đồ website</h3><p>Sơ đồ trang, liên hệ.</p></div>
+      </div>
+      <p>Mạng xã hội: YouTube, Instagram, TikTok, Facebook. Cuối trang có bản quyền © 2022 thuộc về Trường Quốc tế - ĐHQGHN.</p>
+      <p>Form chiến dịch được ghi nhận gồm tư vấn thạc sĩ/tiến sĩ, tuyển sinh/xét tuyển và đăng ký trở thành ISER. Trường thông tin có thể gồm họ tên, điện thoại, email, ngành học/chương trình, tiếng Anh, kinh nghiệm hoặc dữ liệu xét tuyển. Dùng Bootstrap <code>modal</code>/<code>offcanvas</code> và form controls. Các popup thay đổi theo chiến dịch. Chuỗi “Our Spring Sale Has Started” có vẻ là popup mẫu không liên quan, không nên tái tạo nếu chưa xác minh.</p>
+    </section>
+
+    <section class="panel">
+      <h2>Bảng class Bootstrap 5</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Khu vực</th><th>Grid/component gợi ý</th><th>Điều chỉnh responsive</th></tr></thead>
+          <tbody>
+            <tr><td>Header</td><td><code>container</code>, <code>row</code>, <code>navbar-expand-xl</code>, <code>dropdown</code></td><td>Thu gọn menu và link phụ trên mobile.</td></tr>
+            <tr><td>Banner</td><td><code>carousel slide</code>, indicators, controls</td><td>Crop/chiều cao theo viewport.</td></tr>
+            <tr><td>Lối tắt</td><td><code>row-cols-2 row-cols-md-3 row-cols-xl-6 g-3</code></td><td>2, 3 rồi 6 cột.</td></tr>
+            <tr><td>Tin/sidebar</td><td><code>row g-4</code>, <code>col-lg-8</code>, <code>col-lg-4</code></td><td>Sidebar xuống dưới bài chính.</td></tr>
+            <tr><td>Sự kiện/media</td><td><code>col-lg-5</code>, <code>col-lg-7</code>, <code>ratio-16x9</code></td><td>Xếp dọc trên mobile.</td></tr>
+            <tr><td>Chương trình</td><td><code>nav-tabs</code>, <code>tab-content</code>, <code>row-cols-lg-4</code>, <code>card</code></td><td>Giảm số thẻ mỗi hàng; dùng trượt/phân trang.</td></tr>
+            <tr><td>Số liệu</td><td><code>row-cols-2 row-cols-md-3 row-cols-xl-6</code></td><td>2/3/6 cột.</td></tr>
+            <tr><td>Đối tác</td><td><code>row-cols-3 row-cols-md-5 row-cols-xl-7</code> hoặc carousel</td><td>Logo dùng <code>object-fit: contain</code>.</td></tr>
+            <tr><td>Footer</td><td><code>row g-4</code>, cột 4/4/2/2</td><td>Xếp dọc hoặc 2 cột ở mobile.</td></tr>
+            <tr><td>CTA/form</td><td><code>position-fixed</code>, <code>btn</code>, <code>modal</code>/<code>offcanvas</code></td><td>Tránh che nội dung và vùng safe-area.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+    <p class="muted">Bootstrap cung cấp lưới, component và utility. Font, màu, nhịp khoảng cách, crop ảnh, icon và chuyển động cần tinh chỉnh bằng CSS/JS riêng theo nhận diện VNU-IS.</p>
+  </main>
+  <button class="cta" type="button" aria-label="Đăng ký tư vấn tuyển sinh">Đăng ký tư vấn tuyển sinh</button>
+</body>
+</html>
